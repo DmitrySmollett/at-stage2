@@ -7,101 +7,68 @@ import errorsandexceptions.university.exceptions.StudentHasNoSubjectsException;
 import errorsandexceptions.university.exceptions.UniversityHasNoFaculties;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 public class DeansOffice {
+  private static Random rand = new Random();
 
   public static double calculateAverageStudentGrade(Student student)
       throws StudentHasNoSubjectsException, GradeOutOfRangeException {
-    double averageGrade = 0;
-    List<Subject> bunchOfSubjects = student.getBunchOfSubjects();
-    if (bunchOfSubjects.isEmpty()) {
+    List<Subject> subjects = student.getBunchOfSubjects();
+    if (subjects.isEmpty()) {
       throw new StudentHasNoSubjectsException("Student has no subjects");
     }
-    for (Subject subject : bunchOfSubjects) {
-      if (subject.getGrade() < 0 || subject.getGrade() > 10) {
-        throw new GradeOutOfRangeException("Grade supposed to be in the range from 0 to 10");
-      }
-      averageGrade += subject.getGrade();
+    if (subjects.stream().anyMatch(o -> o.getGrade() < 0 || o.getGrade() > 10)) {
+      throw new GradeOutOfRangeException("Grade supposed to be in the range from 0 to 10");
     }
-    averageGrade = averageGrade / bunchOfSubjects.size();
-    return averageGrade;
+    return subjects.stream()
+        .filter(o -> o.getGrade() >= 0 || o.getGrade() <= 10)
+        .mapToInt(Subject::getGrade)
+        .average()
+        .orElse(0);
   }
 
   public static double calculateAverageSubjectGradeInGroup(CourseOfStudy course, Group group)
       throws GroupHasNoStudentsException {
-    double averageGrade = 0;
-    int numberOfStudentsWithTheCourse = 0;
-    List<Student> bunchOfStudents = group.getBunchOfStudents();
-    if (bunchOfStudents.isEmpty()) {
+    if (group.getBunchOfStudents().isEmpty()) {
       throw new GroupHasNoStudentsException("Group " + group.getName() + " has no students");
     }
-    for (Student student : bunchOfStudents) {
-      Optional<Integer> grade = student.findGrade(course);
-      if (grade.isPresent() && grade.get() >= 0 && grade.get() <= 10) {
-        averageGrade += grade.get();
-        numberOfStudentsWithTheCourse++;
-      }
-    }
-    if (numberOfStudentsWithTheCourse == 0) {
-      return 0;
-    }
-    averageGrade = averageGrade / numberOfStudentsWithTheCourse;
-    return averageGrade;
+    return group.getBunchOfStudents().stream()
+        .flatMap((o) -> o.getBunchOfSubjects().stream())
+        .filter(o -> o.getCourseOfStudy() == course && o.getGrade() >= 0 && o.getGrade() <= 10)
+        .mapToInt(Subject::getGrade)
+        .average()
+        .orElse(0);
   }
 
   public static double calculateAverageSubjectGradeInFaculty(CourseOfStudy course, Faculty faculty)
       throws FacultyHasNoGroupsException {
-    double averageGrade = 0;
-    int numberOfStudentsWithTheCourse = 0;
-    List<Group> bunchOfGroups = faculty.getBunchOfGroups();
-    if (bunchOfGroups.isEmpty()) {
+    if (faculty.getBunchOfGroups().isEmpty()) {
       throw new FacultyHasNoGroupsException("Faulty " + faculty.getName() + "has no groups");
     }
-    for (Group group : bunchOfGroups) {
-      for (Student student : group.getBunchOfStudents()) {
-        Optional<Integer> grade = student.findGrade(course);
-        if (grade.isPresent() && grade.get() >= 0 && grade.get() <= 10) {
-          averageGrade += grade.get();
-          numberOfStudentsWithTheCourse++;
-        }
-      }
-    }
-    if (numberOfStudentsWithTheCourse == 0) {
-      return 0;
-    }
-    averageGrade = averageGrade / numberOfStudentsWithTheCourse;
-    return averageGrade;
+    return faculty.getBunchOfGroups().stream()
+        .flatMap((o) -> o.getBunchOfStudents().stream())
+        .flatMap((o) -> o.getBunchOfSubjects().stream())
+        .filter(o -> o.getCourseOfStudy() == course && o.getGrade() >= 0 && o.getGrade() <= 10)
+        .mapToInt(Subject::getGrade)
+        .average()
+        .orElse(0);
   }
 
   public static double calculateAverageSubjectGradeInUniversity(
       CourseOfStudy course, University university) throws UniversityHasNoFaculties {
-    double averageGrade = 0;
-    int numberOfStudentsWithTheCourse = 0;
-    List<Faculty> bunchOfFaculties = university.getBunchOfFaculties();
-    if (bunchOfFaculties.isEmpty()) {
-      throw new UniversityHasNoFaculties("There is no faculties in " + university.getName());
+    if (university.getBunchOfFaculties().isEmpty()) {
+      throw new UniversityHasNoFaculties("There are no faculties in " + university.getName());
     }
-    for (Faculty faculty : bunchOfFaculties) {
-      for (Group group : faculty.getBunchOfGroups()) {
-        for (Student student : group.getBunchOfStudents()) {
-          Optional<Integer> grade = student.findGrade(course);
-          if (grade.isPresent() && grade.get() >= 0 && grade.get() <= 10) {
-            averageGrade += grade.get();
-            numberOfStudentsWithTheCourse++;
-          }
-        }
-      }
-    }
-    if (numberOfStudentsWithTheCourse == 0) {
-      return 0;
-    }
-    averageGrade = averageGrade / numberOfStudentsWithTheCourse;
-    return averageGrade;
+    return university.getBunchOfFaculties().stream()
+        .flatMap((o) -> o.getBunchOfGroups().stream())
+        .flatMap((o) -> o.getBunchOfStudents().stream())
+        .flatMap((o) -> o.getBunchOfSubjects().stream())
+        .filter(o -> o.getCourseOfStudy() == course && o.getGrade() >= 0 && o.getGrade() <= 10)
+        .mapToInt(Subject::getGrade)
+        .average()
+        .orElse(0);
   }
-
-  private static Random rand = new Random();
 
   public static Student createRandomStudent(int numberOfSubjects) {
     String[] firstNameTemplate = {"Harris", "Regan", "Natan", "Rhys", "Marley", "Blake", "Arthur"};

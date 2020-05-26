@@ -3,7 +3,6 @@ package errorsandexceptions;
 import errorsandexceptions.university.CourseOfStudy;
 import errorsandexceptions.university.DeansOffice;
 import errorsandexceptions.university.Faculty;
-import errorsandexceptions.university.Group;
 import errorsandexceptions.university.Student;
 import errorsandexceptions.university.University;
 import errorsandexceptions.university.exceptions.FacultyHasNoGroupsException;
@@ -17,6 +16,7 @@ public class JavaErrorAndExceptionsRunner {
 
     Student student = DeansOffice.createRandomStudent(3);
     System.out.println(student.toString());
+
     try {
       System.out.println(
           "Average grade for student is " + DeansOffice.calculateAverageStudentGrade(student));
@@ -49,13 +49,11 @@ public class JavaErrorAndExceptionsRunner {
       }
     }
 
-    Group group;
     if (faculty != null && !faculty.getBunchOfGroups().isEmpty()) {
-      group = faculty.getBunchOfGroups().get(0);
       try {
         System.out.println(
             "Average grade across group is "
-                + DeansOffice.calculateAverageSubjectGradeInGroup(CourseOfStudy.PHYSICS, group));
+                + DeansOffice.calculateAverageSubjectGradeInGroup(CourseOfStudy.PHYSICS, faculty.getBunchOfGroups().get(0)));
       } catch (GroupHasNoStudentsException e) {
         e.printStackTrace();
       }

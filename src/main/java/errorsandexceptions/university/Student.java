@@ -33,11 +33,9 @@ public class Student {
     this.bunchOfSubjects = bunchOfSubjects;
   }
 
-  public Optional<Integer> findGrade(CourseOfStudy course) {
-    Optional<Subject> subject;
-    subject =
-        this.getBunchOfSubjects().stream().filter(o -> o.getCourseOfStudy() == course).findFirst();
-    return subject.map(Subject::getGrade);
+  public Subject findGrade(CourseOfStudy course) {
+    Optional<Subject> subject = this.getBunchOfSubjects().stream().filter(o -> o.getCourseOfStudy() == course).findFirst();
+    return subject.orElse(null);
   }
 
   @Override
