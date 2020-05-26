@@ -2,7 +2,6 @@ package errorsandexceptions.university;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class Student {
   private String firstName;
@@ -31,11 +30,6 @@ public class Student {
 
   public void setBunchOfSubjects(List<Subject> bunchOfSubjects) {
     this.bunchOfSubjects = bunchOfSubjects;
-  }
-
-  public Subject findGrade(CourseOfStudy course) {
-    Optional<Subject> subject = this.getBunchOfSubjects().stream().filter(o -> o.getCourseOfStudy() == course).findFirst();
-    return subject.orElse(null);
   }
 
   @Override

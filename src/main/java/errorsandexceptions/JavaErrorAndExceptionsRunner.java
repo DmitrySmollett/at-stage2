@@ -53,7 +53,8 @@ public class JavaErrorAndExceptionsRunner {
       try {
         System.out.println(
             "Average grade across group is "
-                + DeansOffice.calculateAverageSubjectGradeInGroup(CourseOfStudy.PHYSICS, faculty.getBunchOfGroups().get(0)));
+                + DeansOffice.calculateAverageSubjectGradeInGroup(
+                    CourseOfStudy.PHYSICS, faculty.getBunchOfGroups().get(0)));
       } catch (GroupHasNoStudentsException e) {
         e.printStackTrace();
       }
