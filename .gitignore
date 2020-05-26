@@ -1,0 +1,7 @@
+*.db
+*.log
+bin/
+target/
+.idea/
+*.iml
+*.bat
