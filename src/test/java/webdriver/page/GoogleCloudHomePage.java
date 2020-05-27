@@ -1,4 +1,4 @@
-package webdriver;
+package webdriver.page;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;

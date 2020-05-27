@@ -25,15 +25,15 @@ public class CarTraffic {
                     e.printStackTrace();
                   }
                   if (parkingPlaceIsFound) {
+                    System.out.println(car.toString() + " has found a vacant place"
+                            + " (" + parking.remainingCapacity() + " left)");
                     try {
-                      System.out.println(car.toString() + " has found a vacant place"
-                          + " (" + parking.remainingCapacity() + " left)");
                       TimeUnit.SECONDS.sleep(20);
-                      parking.remove(car);
-                      System.out.println(car.toString() + " just headed home");
                     } catch (InterruptedException e) {
                       e.printStackTrace();
                     }
+                    parking.remove(car);
+                    System.out.println(car.toString() + " just headed home");
                   } else {
                     System.out.println(car.toString() + " got tired of waiting and headed home");
                   }

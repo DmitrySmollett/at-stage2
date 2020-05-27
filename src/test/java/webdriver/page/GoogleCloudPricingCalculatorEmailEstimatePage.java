@@ -1,4 +1,4 @@
-package webdriver;
+package webdriver.page;
 
 import java.util.ArrayList;
 import org.openqa.selenium.JavascriptExecutor;

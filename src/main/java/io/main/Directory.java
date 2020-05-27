@@ -20,7 +20,6 @@ public class Directory {
     } else {
       filesAsLines.add(line + location.getName());
     }
-
     for (File file : location.listFiles()) {
       if (file.isFile()) {
         filesAsLines.add(line + "        " + file.getName());
@@ -35,11 +34,8 @@ public class Directory {
   public static int countFolders(File file) {
     int numberOfFolders = 0;
     try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-      for (String line : bufferedReader.lines().collect(Collectors.toList())) {
-        if (line.trim().startsWith("|---")) {
-          numberOfFolders++;
-        }
-      }
+      numberOfFolders =
+          (int) bufferedReader.lines().filter(o -> o.trim().startsWith("|---")).count();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -49,34 +45,31 @@ public class Directory {
   public static int countFiles(File file) {
     int numberOfFiles = 0;
     try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-      for (String line : bufferedReader.lines().collect(Collectors.toList())) {
-        if (line.startsWith(" ") && !line.trim().startsWith("|---") && !line.trim().isEmpty()) {
-          numberOfFiles++;
-        }
-      }
+      numberOfFiles =
+          (int) bufferedReader.lines()
+              .filter(o -> o.startsWith(" ") && !o.trim().isEmpty() && !o.trim().startsWith("|---"))
+              .count();
     } catch (IOException e) {
       e.printStackTrace();
     }
     return numberOfFiles;
   }
 
-  public static double countAverageFileNameLength (File file) {
-    int numberOfFiles = 0;
+  public static double countAverageFileNameLength(File file) {
     double averageLength = 0;
     try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-      for (String line : bufferedReader.lines().collect(Collectors.toList())) {
-        if (line.startsWith(" ") && !line.trim().startsWith("|---") && !line.trim().isEmpty()) {
-          averageLength += line.trim().length();
-          numberOfFiles++;
-        }
-      }
+      averageLength = bufferedReader.lines()
+          .filter(o -> o.startsWith(" ") && !o.trim().isEmpty() && !o.trim().startsWith("|---"))
+          .mapToInt(o -> o.trim().length())
+          .average()
+          .orElse(0);
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return averageLength / numberOfFiles;
+    return averageLength;
   }
 
-  public static double countAverageFilesPerFolder (File file) {
+  public static double countAverageFilesPerFolder(File file) {
     return (double) countFiles(file) / countFolders(file);
   }
 }
