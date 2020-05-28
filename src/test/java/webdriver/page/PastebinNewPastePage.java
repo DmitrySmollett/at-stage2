@@ -7,10 +7,9 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class PastebinNewPastePage {
-  private WebDriver driver;
-  private String pasteText;
-  private String titleText;
+public class PastebinNewPastePage extends AbstractPage {
+  private final String pasteText;
+  private final String titleText;
 
   @FindBy(xpath = "//textarea[@name='paste_code']")
   private WebElement generalInputField;
@@ -19,18 +18,18 @@ public class PastebinNewPastePage {
   private WebElement codeStyle;
 
   public PastebinNewPastePage(WebDriver driver, String pasteText, String titleText) {
-    this.driver = driver;
+    super(driver);
     this.pasteText = pasteText;
     this.titleText = titleText;
     PageFactory.initElements(driver, this);
   }
 
   public boolean newPasteMatchesTheChosenOne() {
-    new WebDriverWait(driver, 10)
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.textToBePresentInElement(generalInputField, pasteText));
-    new WebDriverWait(driver, 10)
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.titleContains(titleText));
-    new WebDriverWait(driver, 10)
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.textToBePresentInElement(codeStyle, "Bash"));
     return true;
   }

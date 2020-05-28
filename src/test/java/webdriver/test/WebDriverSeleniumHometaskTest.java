@@ -1,7 +1,12 @@
 package webdriver.test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.opera.OperaDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -19,9 +24,9 @@ public class WebDriverSeleniumHometaskTest {
     //driver = new OperaDriver();
   }
 
-  @Test(description = "Hardcore Test", invocationCount = 1)
+  @Test(description = "Hardcore Test")
   public void googleCloudCalculatorEstimateTotalPriceMatchesTheOneFromEmail() {
-    boolean estimateTotalPriceMatchesTheOneFromEmail =
+    String estimateTotalPriceFromEmail =
         new GoogleCloudHomePage(driver)
             .openPage()
             .searchForGoogleCloudPlatformPricingCalculator()
@@ -39,8 +44,8 @@ public class WebDriverSeleniumHometaskTest {
             .clickEmailEstimate()
             .registerNewEmailAddress()
             .confirmEstimateWithTemporaryEmailAddress()
-            .totalPriceInEmailMatchesTheOriginalOne();
-    Assert.assertTrue(true, "Estimate total price from Email doesn't match the original one");
+            .getTotalPriceFromTheEmail();
+    assertThat(estimateTotalPriceFromEmail, containsString("USD 1,082.77"));
   }
 
   @Test(description = "Hurt Me Plenty Test")

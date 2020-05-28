@@ -8,8 +8,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class GoogleCloudPricingCalculatorPage {
-  private WebDriver driver;
+public class GoogleCloudPricingCalculatorPage extends AbstractPage {
 
   @FindBy(
       xpath =
@@ -102,7 +101,7 @@ public class GoogleCloudPricingCalculatorPage {
   private WebElement emailEstimateButton;
 
   public GoogleCloudPricingCalculatorPage(WebDriver driver) {
-    this.driver = driver;
+    super(driver);
     PageFactory.initElements(driver, this);
   }
 
@@ -167,13 +166,14 @@ public class GoogleCloudPricingCalculatorPage {
   }
 
   public boolean checkEstimateFields() {
-    new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOfAllElements(
-        estimateVmClass,
-        estimateInstanceType,
-        estimateRegion,
-        estimateLocalSsdSpace,
-        estimateCommitmentTerm,
-        estimateTotalCost));
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS).until(ExpectedConditions
+        .visibilityOfAllElements(
+            estimateVmClass,
+            estimateInstanceType,
+            estimateRegion,
+            estimateLocalSsdSpace,
+            estimateCommitmentTerm,
+            estimateTotalCost));
     return estimateVmClass.getText().contains("regular")
         && estimateInstanceType.getText().contains("n1-standard-8")
         && estimateRegion.getText().contains("Frankfurt")
@@ -188,13 +188,13 @@ public class GoogleCloudPricingCalculatorPage {
   }
 
   private WebElement waitUntilElementIsClickable(WebElement element) {
-    return new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(element));
+    return new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
+        .until(ExpectedConditions.elementToBeClickable(element));
   }
 
   // only for elements that continuously ignore clicks
-  private void forceClickElementWhenClickable (WebElement element) {
+  private void forceClickElementWhenClickable(WebElement element) {
     waitUntilElementIsClickable(element);
     ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
   }
-
 }

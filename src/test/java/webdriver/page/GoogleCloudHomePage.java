@@ -9,12 +9,11 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class GoogleCloudHomePage {
-  private static final String CLOUD_GOOGLE_HOME_PAGE = "http://cloud.google.com/";
-  private static final String SEARCH_QUERRY = "Google Cloud Platform Pricing Calculator";
-  private WebDriver driver;
+public class GoogleCloudHomePage extends AbstractPage {
+  private static final String CLOUD_GOOGLE_HOME_PAGE_URL = "http://cloud.google.com";
+  private static final String SEARCH_QUERY = "Google Cloud Platform Pricing Calculator";
 
-  @FindBy(className = "devsite-search-form")
+  @FindBy(className = "devsite-search-container")
   WebElement searchButton;
 
   @FindBy(name = "q")
@@ -27,38 +26,43 @@ public class GoogleCloudHomePage {
   WebElement calculatorFrame;
 
   public GoogleCloudHomePage(WebDriver driver) {
-    this.driver = driver;
+    super(driver);
     PageFactory.initElements(driver, this);
   }
 
   public GoogleCloudHomePage openPage() {
-    driver.get(CLOUD_GOOGLE_HOME_PAGE);
+    driver.navigate().to(CLOUD_GOOGLE_HOME_PAGE_URL);
     return this;
   }
 
   public GoogleCloudHomePage searchForGoogleCloudPlatformPricingCalculator() {
     waitUntilElementIsClickable(searchButton).click();
-    waitUntilElementIsClickable(searchInput).sendKeys(SEARCH_QUERRY + Keys.ENTER);
+    waitUntilElementIsClickable(searchInput).sendKeys(SEARCH_QUERY + Keys.ENTER);
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage switchToTheGoogleCloudPlatformPricingCalculatorPage() {
-    new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(
-        By.xpath(
-            "//div[@class='gsc-thumbnail-inside']/descendant::b[text()='" + SEARCH_QUERRY + "']")))
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
+        .until(
+            ExpectedConditions.elementToBeClickable(
+                By.xpath(
+                    "//div[@class='gsc-thumbnail-inside']/descendant::b[text()='"
+                        + SEARCH_QUERY
+                        + "']")))
         .click();
     switchToTheCalculatorFrame();
     return new GoogleCloudPricingCalculatorPage(driver);
   }
 
   private void switchToTheCalculatorFrame() {
-    new WebDriverWait(driver, 10)
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(devsiteFrame));
-    new WebDriverWait(driver, 10)
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(calculatorFrame));
   }
 
   private WebElement waitUntilElementIsClickable(WebElement element) {
-    return new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(element));
+    return new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
+        .until(ExpectedConditions.elementToBeClickable(element));
   }
 }

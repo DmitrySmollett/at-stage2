@@ -11,9 +11,8 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class GoogleCloudPricingCalculatorEmailEstimatePage {
-  private static final String TEMPORARY_EMAIL = "http://temp-mail.org";
-  private WebDriver driver;
+public class GoogleCloudPricingCalculatorEmailEstimatePage extends AbstractPage {
+  private static final String TEMPORARY_EMAIL_URL = "http://temp-mail.org";
   private String calculatorWindow;
   private String emailWindow;
 
@@ -39,15 +38,13 @@ public class GoogleCloudPricingCalculatorEmailEstimatePage {
   WebElement totalCost;
 
   public GoogleCloudPricingCalculatorEmailEstimatePage(WebDriver driver) {
-    this.driver = driver;
+    super(driver);
     PageFactory.initElements(driver, this);
   }
 
   public GoogleCloudPricingCalculatorEmailEstimatePage registerNewEmailAddress() {
-    // Additional WebDriverWait because switching to a new page while content is loading quite often
-    // result in a broken page.
     waitUntilElementIsClickable(calculatorEmailField);
-    switchDriverToTheNewTab(TEMPORARY_EMAIL);
+    switchDriverToTheNewTab(TEMPORARY_EMAIL_URL);
     waitUntilElementIsClickable(copyEmailAddressButton).click();
     driver.switchTo().window(calculatorWindow);
 
@@ -57,18 +54,17 @@ public class GoogleCloudPricingCalculatorEmailEstimatePage {
     return this;
   }
 
-  public GoogleCloudPricingCalculatorEmailEstimatePage
-      confirmEstimateWithTemporaryEmailAddress() {
+  public GoogleCloudPricingCalculatorEmailEstimatePage confirmEstimateWithTemporaryEmailAddress() {
     waitUntilElementIsClickable(calculatorEmailField).sendKeys(Keys.chord(Keys.CONTROL, "v"));
     forceClickElementWhenClickable(calculatorSendEmailButton);
     return this;
   }
 
-  public boolean totalPriceInEmailMatchesTheOriginalOne() {
+  public String getTotalPriceFromTheEmail() {
     driver.switchTo().window(emailWindow);
     waitUntilElementIsClickable(googleMailLink).click();
     waitUntilElementIsClickable(totalCost);
-    return totalCost.getText().contains("USD 1,082.77");
+    return totalCost.getText();
   }
 
   private void switchDriverToTheNewTab(String link) {
@@ -85,9 +81,9 @@ public class GoogleCloudPricingCalculatorEmailEstimatePage {
   }
 
   private void switchToTheCalculatorFrame() {
-    new WebDriverWait(driver, 10)
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(devsiteFrame));
-    new WebDriverWait(driver, 10)
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(calculatorFrame));
   }
 
@@ -97,6 +93,7 @@ public class GoogleCloudPricingCalculatorEmailEstimatePage {
   }
 
   private WebElement waitUntilElementIsClickable(WebElement element) {
-    return new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(element));
+    return new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
+        .until(ExpectedConditions.elementToBeClickable(element));
   }
 }

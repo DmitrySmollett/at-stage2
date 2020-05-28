@@ -2,16 +2,16 @@ package webdriver.page;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class PastebinHomePage {
-  private static final String PASTEBIN_HOME_PAGE = "http://pastebin.com/";
+public class PastebinHomePage extends AbstractPage {
+  private static final String PASTEBIN_HOME_PAGE_URL = "http://pastebin.com/";
   private String titleText;
   private String pasteText;
-  private WebDriver driver;
 
   @FindBy(name = "paste_code")
   private WebElement generalInputField;
@@ -39,12 +39,12 @@ public class PastebinHomePage {
   private WebElement submitPasteButton;
 
   public PastebinHomePage(WebDriver driver) {
-    this.driver = driver;
+    super(driver);
     PageFactory.initElements(driver, this);
   }
 
   public PastebinHomePage openPage() {
-    driver.get(PASTEBIN_HOME_PAGE);
+    driver.get(PASTEBIN_HOME_PAGE_URL);
     return this;
   }
 
@@ -55,13 +55,13 @@ public class PastebinHomePage {
   }
 
   public PastebinHomePage selectSyntaxStyleAsBash() {
-    waitUntilElementIsClickable(syntaxStyleBox).click();
+    targetClickWithOffsetWhenClickable(syntaxStyleBox);
     waitUntilElementIsClickable(syntaxStyleBoxBashOption).click();
     return this;
   }
 
   public PastebinHomePage selectExpirationTimeAs10Minutes() {
-    waitUntilElementIsClickable(expirationTimeBox).click();
+    targetClickWithOffsetWhenClickable(expirationTimeBox);
     waitUntilElementIsClickable(expirationTimeBoxTenMinutesOption).click();
     return this;
   }
@@ -74,16 +74,23 @@ public class PastebinHomePage {
 
   public PastebinNewPastePage sendPaste() {
     waitUntilElementIsClickable(submitPasteButton).click();
-    return new PastebinNewPastePage(driver,pasteText, titleText);
+    return new PastebinNewPastePage(driver, pasteText, titleText);
   }
 
   public boolean titleOfCreatedPasteContainsEnteredTitle() {
     waitUntilElementIsClickable(submitPasteButton).click();
-    new WebDriverWait(driver, 10).until(ExpectedConditions.titleContains(titleText));
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
+        .until(ExpectedConditions.titleContains(titleText));
     return true;
   }
 
   private WebElement waitUntilElementIsClickable(WebElement element) {
-    return new WebDriverWait(driver, 10).until(ExpectedConditions.elementToBeClickable(element));
+    return new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
+        .until(ExpectedConditions.elementToBeClickable(element));
+  }
+
+  private void targetClickWithOffsetWhenClickable (WebElement element) {
+    waitUntilElementIsClickable(element);
+    new Actions(driver).moveToElement(element,10,10).click().perform();
   }
 }
