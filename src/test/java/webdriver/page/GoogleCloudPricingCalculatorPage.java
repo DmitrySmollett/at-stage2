@@ -3,6 +3,8 @@ package webdriver.page;
 import static webdriver.base.PageHelpers.forceClickWhenClickable;
 import static webdriver.base.PageHelpers.waitUntilClickable;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -163,7 +165,7 @@ public class GoogleCloudPricingCalculatorPage extends AbstractPage {
     return this;
   }
 
-  public boolean checkEstimateFields() {
+  public Map<String, String> checkEstimateFields() {
     new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.visibilityOfAllElements(
             estimateVmClass,
@@ -172,12 +174,14 @@ public class GoogleCloudPricingCalculatorPage extends AbstractPage {
             estimateLocalSsdSpace,
             estimateCommitmentTerm,
             estimateTotalCost));
-    return estimateVmClass.getText().contains("regular")
-        && estimateInstanceType.getText().contains("n1-standard-8")
-        && estimateRegion.getText().contains("Frankfurt")
-        && estimateLocalSsdSpace.getText().contains("2x375 GiB")
-        && estimateCommitmentTerm.getText().contains("1 Year")
-        && estimateTotalCost.getText().contains("USD 1,082.77 per 1 month");
+    Map<String, String> map = new HashMap<>();
+    map.put("VM Class", estimateVmClass.getText());
+    map.put("Instance Type", estimateInstanceType.getText());
+    map.put("Region", estimateRegion.getText());
+    map.put("Local SSD", estimateLocalSsdSpace.getText());
+    map.put("Commitment", estimateCommitmentTerm.getText());
+    map.put("Total Cost", estimateTotalCost.getText());
+    return map;
   }
 
   public GoogleCloudPricingCalculatorEmailEstimatePage clickEmailEstimate() {

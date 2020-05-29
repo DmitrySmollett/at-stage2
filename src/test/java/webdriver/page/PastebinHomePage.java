@@ -2,18 +2,15 @@ package webdriver.page;
 
 import static webdriver.base.PageHelpers.targetClickWithOffsetWhenClickable;
 import static webdriver.base.PageHelpers.waitUntilClickable;
+import static webdriver.base.PageHelpers.waitUntilPageIsLoaded;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class PastebinHomePage extends AbstractPage {
   private static final String PASTEBIN_HOME_PAGE_URL = "http://pastebin.com/";
-  private String titleText;
-  private String pasteText;
 
   @FindBy(name = "paste_code")
   private WebElement generalInputField;
@@ -47,7 +44,6 @@ public class PastebinHomePage extends AbstractPage {
   }
 
   public PastebinHomePage inputGeneralPaste(String paste) {
-    this.pasteText = paste;
     waitUntilClickable(driver, generalInputField).sendKeys(paste);
     return this;
   }
@@ -65,20 +61,18 @@ public class PastebinHomePage extends AbstractPage {
   }
 
   public PastebinHomePage inputTitle(String title) {
-    this.titleText = title;
     waitUntilClickable(driver, titleInputField).sendKeys(title);
     return this;
   }
 
   public PastebinNewPastePage sendPaste() {
     waitUntilClickable(driver, submitPasteButton).click();
-    return new PastebinNewPastePage(driver, pasteText, titleText);
+    return new PastebinNewPastePage(driver);
   }
 
-  public boolean titleOfCreatedPasteContainsEnteredTitle() {
+  public String getPageTitle() {
     waitUntilClickable(driver, submitPasteButton).click();
-    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(ExpectedConditions.titleContains(titleText));
-    return true;
+    waitUntilPageIsLoaded(driver);
+    return driver.getTitle();
   }
 }

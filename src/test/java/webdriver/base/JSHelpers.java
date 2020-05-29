@@ -9,7 +9,11 @@ public class JSHelpers {
     ((JavascriptExecutor) driver).executeScript("window.open(arguments[0])", link);
   }
 
-  public static void clickTheElement (WebDriver driver, WebElement element) {
+  public static void clickTheElement(WebDriver driver, WebElement element) {
     ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+  }
+
+  public static Boolean pageIsLoaded(WebDriver driver) {
+    return ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete");
   }
 }

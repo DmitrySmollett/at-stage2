@@ -11,6 +11,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class PageHelpers {
   private static final int WAIT_TIMEOUT_SECONDS = 10; //TODO Switch to System -> properties -> wait_timeout in Framework
 
+  public static void waitUntilPageIsLoaded(WebDriver driver) {
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS).until(CustomConditions.pageIsLoaded());
+  }
+
   public static WebElement waitUntilClickable(WebDriver driver, WebElement element) {
     return new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.elementToBeClickable(element));

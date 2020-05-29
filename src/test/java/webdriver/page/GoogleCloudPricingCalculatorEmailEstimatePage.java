@@ -55,7 +55,7 @@ public class GoogleCloudPricingCalculatorEmailEstimatePage extends AbstractPage 
     tinyWait(driver); //Additional 300 ms to exclude rare cases when browser switches to the next page before email is in the clipboard
     driver.switchTo().window(calculatorWindow);
 
-    if (!(driver instanceof FirefoxDriver)) {                          //TODO Switch to System -> properties -> browser in Framework
+    if (!(driver instanceof FirefoxDriver)) {         //TODO Switch to System -> properties -> browser in Framework
       switchToTheFrame(driver, devsiteFrame);
       switchToTheFrame(driver, calculatorFrame);
     }

@@ -1,13 +1,11 @@
 package webdriver.test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.opera.OperaDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -45,12 +43,12 @@ public class WebDriverSeleniumHometaskTest {
             .registerNewEmailAddress()
             .confirmEstimateWithTemporaryEmailAddress()
             .getTotalPriceFromTheEmail();
-    assertThat(estimateTotalPriceFromEmail, containsString("USD 1,082.77"));
+    assertThat(estimateTotalPriceFromEmail).as("Total price from e-mail").contains("USD 1,082.77");
   }
 
   @Test(description = "Hurt Me Plenty Test")
   public void googleCloudCalculatorEstimateFieldsContainDataThatWasEnteredPreviously() {
-    boolean estimateMatchesTheChosenData =
+    Map<String, String> estimateData =
         new GoogleCloudHomePage(driver)
             .openPage()
             .searchForGoogleCloudPlatformPricingCalculator()
@@ -66,22 +64,26 @@ public class WebDriverSeleniumHometaskTest {
             .pickCommittedUsage()
             .addToEstimate()
             .checkEstimateFields();
-    Assert.assertTrue(
-        estimateMatchesTheChosenData, "Estimate fields data doesn't match the original one");
+    SoftAssertions softly = new SoftAssertions();
+    softly.assertThat(estimateData.get("VM Class")).as("Virtual machine class").contains("regular");
+    softly.assertThat(estimateData.get("Instance Type")).as("Instance type").contains("n1-standard-8");
+    softly.assertThat(estimateData.get("Region")).as("Region").contains("Frankfurt");
+    softly.assertThat(estimateData.get("Local SSD")).as("Local SSD space").contains("2x375 GiB");
+    softly.assertThat(estimateData.get("Commitment")).as("Commitment term").contains("1 Year");
+    softly.assertThat(estimateData.get("Total Cost")).as("Estimate total cost").contains("USD 1,082.77 per 1 month");
+    softly.assertAll();
   }
 
   @Test(description = "I Can Win Test")
   public void pasteCanBeCreated() {
-    boolean pageTitleMatchesTheOriginalOne =
+    String pageTitle =
         new PastebinHomePage(driver)
             .openPage()
             .inputGeneralPaste("Hello from WebDriver")
             .selectExpirationTimeAs10Minutes()
             .inputTitle("helloweb")
-            .titleOfCreatedPasteContainsEnteredTitle();
-    Assert.assertTrue(
-        pageTitleMatchesTheOriginalOne,
-        "Title of a new bastebin page doesn't match the original one");
+            .getPageTitle();
+    assertThat(pageTitle).as("Page title").contains("helloweb");
   }
 
   @Test(description = "Bring It On Test")
@@ -90,7 +92,7 @@ public class WebDriverSeleniumHometaskTest {
         "git config --global user.name  \"New Sheriff in Town\"\n"
             + "git reset $(git commit-tree HEAD^{tree} -m \"Legacy code\")\n"
             + "git push origin master --force";
-    boolean pastebinExactMatch =
+    Map<String, String> newPaste =
         new PastebinHomePage(driver)
             .openPage()
             .inputGeneralPaste(text)
@@ -98,8 +100,12 @@ public class WebDriverSeleniumHometaskTest {
             .selectExpirationTimeAs10Minutes()
             .inputTitle("how to gain dominance among developers")
             .sendPaste()
-            .newPasteMatchesTheChosenOne();
-    Assert.assertTrue(pastebinExactMatch, "New paste doesn'd match the chosen one");
+            .getNewPasteKeyData();
+    SoftAssertions softly = new SoftAssertions();
+    softly.assertThat(newPaste.get("title")).as("Paste title").contains("how to gain dominance among developers");
+    softly.assertThat(newPaste.get("text")).as("Paste text").contains(text);
+    softly.assertThat(newPaste.get("style")).as("Paste style").contains("Bash");
+    softly.assertAll();
   }
 
   @AfterMethod(alwaysRun = true)
