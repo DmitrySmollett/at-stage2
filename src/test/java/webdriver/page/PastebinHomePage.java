@@ -1,8 +1,10 @@
 package webdriver.page;
 
+import static webdriver.base.PageHelpers.targetClickWithOffsetWhenClickable;
+import static webdriver.base.PageHelpers.waitUntilClickable;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -16,14 +18,10 @@ public class PastebinHomePage extends AbstractPage {
   @FindBy(name = "paste_code")
   private WebElement generalInputField;
 
-  @FindBy(
-      xpath =
-          "//*[contains(text(), 'Paste Expiration:')]/parent::*/descendant::span[@class='selection']")
+  @FindBy(xpath = "//*[contains(text(), 'Paste Expiration:')]/parent::*/descendant::span[@class='selection']")
   private WebElement expirationTimeBox;
 
-  @FindBy(
-      xpath =
-          "//*[contains(text(), 'Syntax Highlighting:')]/parent::*/descendant::span[@class='selection']")
+  @FindBy(xpath ="//*[contains(text(), 'Syntax Highlighting:')]/parent::*/descendant::span[@class='selection']")
   private WebElement syntaxStyleBox;
 
   @FindBy(xpath = "//li[contains(text(), '10 Minutes')]")
@@ -50,47 +48,37 @@ public class PastebinHomePage extends AbstractPage {
 
   public PastebinHomePage inputGeneralPaste(String paste) {
     this.pasteText = paste;
-    waitUntilElementIsClickable(generalInputField).sendKeys(paste);
+    waitUntilClickable(driver, generalInputField).sendKeys(paste);
     return this;
   }
 
   public PastebinHomePage selectSyntaxStyleAsBash() {
-    targetClickWithOffsetWhenClickable(syntaxStyleBox);
-    waitUntilElementIsClickable(syntaxStyleBoxBashOption).click();
+    targetClickWithOffsetWhenClickable(driver, syntaxStyleBox);
+    waitUntilClickable(driver, syntaxStyleBoxBashOption).click();
     return this;
   }
 
   public PastebinHomePage selectExpirationTimeAs10Minutes() {
-    targetClickWithOffsetWhenClickable(expirationTimeBox);
-    waitUntilElementIsClickable(expirationTimeBoxTenMinutesOption).click();
+    targetClickWithOffsetWhenClickable(driver, expirationTimeBox);
+    waitUntilClickable(driver, expirationTimeBoxTenMinutesOption).click();
     return this;
   }
 
   public PastebinHomePage inputTitle(String title) {
     this.titleText = title;
-    waitUntilElementIsClickable(titleInputField).sendKeys(title);
+    waitUntilClickable(driver, titleInputField).sendKeys(title);
     return this;
   }
 
   public PastebinNewPastePage sendPaste() {
-    waitUntilElementIsClickable(submitPasteButton).click();
+    waitUntilClickable(driver, submitPasteButton).click();
     return new PastebinNewPastePage(driver, pasteText, titleText);
   }
 
   public boolean titleOfCreatedPasteContainsEnteredTitle() {
-    waitUntilElementIsClickable(submitPasteButton).click();
+    waitUntilClickable(driver, submitPasteButton).click();
     new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
         .until(ExpectedConditions.titleContains(titleText));
     return true;
-  }
-
-  private WebElement waitUntilElementIsClickable(WebElement element) {
-    return new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(ExpectedConditions.elementToBeClickable(element));
-  }
-
-  private void targetClickWithOffsetWhenClickable (WebElement element) {
-    waitUntilElementIsClickable(element);
-    new Actions(driver).moveToElement(element,10,10).click().perform();
   }
 }

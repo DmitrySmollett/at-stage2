@@ -1,13 +1,14 @@
 package webdriver.page;
 
-import org.openqa.selenium.By;
+import static webdriver.base.PageHelpers.switchToTheFrame;
+import static webdriver.base.PageHelpers.waitUntilClickable;
+import static webdriver.base.PageHelpers.waitUntilClickableByXpath;
+
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class GoogleCloudHomePage extends AbstractPage {
   private static final String CLOUD_GOOGLE_HOME_PAGE_URL = "http://cloud.google.com";
@@ -36,33 +37,19 @@ public class GoogleCloudHomePage extends AbstractPage {
   }
 
   public GoogleCloudHomePage searchForGoogleCloudPlatformPricingCalculator() {
-    waitUntilElementIsClickable(searchButton).click();
-    waitUntilElementIsClickable(searchInput).sendKeys(SEARCH_QUERY + Keys.ENTER);
+    waitUntilClickable(driver, searchButton).click();
+    waitUntilClickable(driver, searchInput).sendKeys(SEARCH_QUERY + Keys.ENTER);
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage switchToTheGoogleCloudPlatformPricingCalculatorPage() {
-    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(
-            ExpectedConditions.elementToBeClickable(
-                By.xpath(
-                    "//div[@class='gsc-thumbnail-inside']/descendant::b[text()='"
-                        + SEARCH_QUERY
-                        + "']")))
-        .click();
-    switchToTheCalculatorFrame();
+    waitUntilClickableByXpath(driver, getXpathForQuery(SEARCH_QUERY)).click();
+    switchToTheFrame(driver, devsiteFrame);
+    switchToTheFrame(driver, calculatorFrame);
     return new GoogleCloudPricingCalculatorPage(driver);
   }
 
-  private void switchToTheCalculatorFrame() {
-    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(devsiteFrame));
-    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(calculatorFrame));
-  }
-
-  private WebElement waitUntilElementIsClickable(WebElement element) {
-    return new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(ExpectedConditions.elementToBeClickable(element));
+  private String getXpathForQuery(String query) {
+    return "//div[@class='gsc-thumbnail-inside']/descendant::b[text()='" + query + "']";
   }
 }

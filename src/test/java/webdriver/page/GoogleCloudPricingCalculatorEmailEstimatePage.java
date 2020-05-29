@@ -1,15 +1,20 @@
 package webdriver.page;
 
+import static webdriver.base.JSHelpers.openLinkInNewTab;
+import static webdriver.base.PageHelpers.forceClickWhenClickable;
+import static webdriver.base.PageHelpers.switchToTheFrame;
+import static webdriver.base.PageHelpers.tinyWait;
+import static webdriver.base.PageHelpers.waitThisMuchSecondsUntilClickable;
+import static webdriver.base.PageHelpers.waitUntilClickable;
+
 import java.util.ArrayList;
-import org.openqa.selenium.JavascriptExecutor;
+import java.util.List;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class GoogleCloudPricingCalculatorEmailEstimatePage extends AbstractPage {
   private static final String TEMPORARY_EMAIL_URL = "http://temp-mail.org";
@@ -43,33 +48,36 @@ public class GoogleCloudPricingCalculatorEmailEstimatePage extends AbstractPage 
   }
 
   public GoogleCloudPricingCalculatorEmailEstimatePage registerNewEmailAddress() {
-    waitUntilElementIsClickable(calculatorEmailField);
+    waitUntilClickable(driver, calculatorEmailField);
     switchDriverToTheNewTab(TEMPORARY_EMAIL_URL);
-    waitUntilElementIsClickable(copyEmailAddressButton).click();
+    waitUntilClickable(driver, copyEmailAddressButton).click();
+
+    tinyWait(driver); //Additional 300 ms to exclude rare cases when browser switches to the next page before email is in the clipboard
     driver.switchTo().window(calculatorWindow);
 
-    if (!(driver instanceof FirefoxDriver)) {
-      switchToTheCalculatorFrame();
+    if (!(driver instanceof FirefoxDriver)) {                          //TODO Switch to System -> properties -> browser in Framework
+      switchToTheFrame(driver, devsiteFrame);
+      switchToTheFrame(driver, calculatorFrame);
     }
     return this;
   }
 
   public GoogleCloudPricingCalculatorEmailEstimatePage confirmEstimateWithTemporaryEmailAddress() {
-    waitUntilElementIsClickable(calculatorEmailField).sendKeys(Keys.chord(Keys.CONTROL, "v"));
-    forceClickElementWhenClickable(calculatorSendEmailButton);
+    waitUntilClickable(driver, calculatorEmailField).sendKeys(Keys.chord(Keys.CONTROL, "v"));
+    forceClickWhenClickable(driver, calculatorSendEmailButton);
     return this;
   }
 
   public String getTotalPriceFromTheEmail() {
     driver.switchTo().window(emailWindow);
-    waitUntilElementIsClickable(googleMailLink).click();
-    waitUntilElementIsClickable(totalCost);
+    waitThisMuchSecondsUntilClickable(driver, googleMailLink, 60).click(); //Waiting for e-mail
+    waitUntilClickable(driver, totalCost);
     return totalCost.getText();
   }
 
   private void switchDriverToTheNewTab(String link) {
-    ((JavascriptExecutor) driver).executeScript("window.open(arguments[0])", link);
-    ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+    openLinkInNewTab(driver, link);
+    List<String> tabs = new ArrayList<>(driver.getWindowHandles());
     if (driver.getWindowHandle().equals(tabs.get(0))) {
       emailWindow = tabs.get(1);
       calculatorWindow = tabs.get(0);
@@ -78,22 +86,5 @@ public class GoogleCloudPricingCalculatorEmailEstimatePage extends AbstractPage 
       calculatorWindow = tabs.get(1);
     }
     driver.switchTo().window(emailWindow);
-  }
-
-  private void switchToTheCalculatorFrame() {
-    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(devsiteFrame));
-    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(calculatorFrame));
-  }
-
-  private void forceClickElementWhenClickable(WebElement element) {
-    waitUntilElementIsClickable(element);
-    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-  }
-
-  private WebElement waitUntilElementIsClickable(WebElement element) {
-    return new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(ExpectedConditions.elementToBeClickable(element));
   }
 }

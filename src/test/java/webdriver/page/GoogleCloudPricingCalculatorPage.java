@@ -1,6 +1,8 @@
 package webdriver.page;
 
-import org.openqa.selenium.JavascriptExecutor;
+import static webdriver.base.PageHelpers.forceClickWhenClickable;
+import static webdriver.base.PageHelpers.waitUntilClickable;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -11,8 +13,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class GoogleCloudPricingCalculatorPage extends AbstractPage {
 
   @FindBy(
-      xpath =
-          "//md-pagination-wrapper/descendant::div[@title='Compute Engine' and @class='tab-holder compute']")
+      xpath = "//md-pagination-wrapper/descendant::div[@title='Compute Engine' and @class='tab-holder compute']")
   private WebElement computeEngineButton;
 
   @FindBy(id = "input_58")
@@ -70,8 +71,7 @@ public class GoogleCloudPricingCalculatorPage extends AbstractPage {
   private WebElement committedUsageOneYearOption;
 
   @FindBy(
-      xpath =
-          "//form[@name='ComputeEngineForm']/descendant::*[contains(text(), 'Add to Estimate')]")
+      xpath = "//form[@name='ComputeEngineForm']/descendant::*[contains(text(), 'Add to Estimate')]")
   private WebElement addToEstimateButton;
 
   @FindBy(xpath = "//div[@class='md-list-item-text ng-binding' and contains(text(), 'VM class:')]")
@@ -85,13 +85,11 @@ public class GoogleCloudPricingCalculatorPage extends AbstractPage {
   private WebElement estimateRegion;
 
   @FindBy(
-      xpath =
-          "//div[@class='md-list-item-text ng-binding' and contains(text(), 'Total available local SSD space')]")
+      xpath = "//div[@class='md-list-item-text ng-binding' and contains(text(), 'Total available local SSD space')]")
   private WebElement estimateLocalSsdSpace;
 
   @FindBy(
-      xpath =
-          "//div[@class='md-list-item-text ng-binding' and contains(text(), 'Commitment term:')]")
+      xpath = "//div[@class='md-list-item-text ng-binding' and contains(text(), 'Commitment term:')]")
   private WebElement estimateCommitmentTerm;
 
   @FindBy(xpath = "//b[@class='ng-binding' and contains(text(), 'Total Estimated Cost')]")
@@ -106,68 +104,68 @@ public class GoogleCloudPricingCalculatorPage extends AbstractPage {
   }
 
   public GoogleCloudPricingCalculatorPage clickComputeEngineButton() {
-    waitUntilElementIsClickable(computeEngineButton).click();
+    waitUntilClickable(driver, computeEngineButton).click();
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage inputNumberOfInstances(Integer numberOfInstances) {
-    waitUntilElementIsClickable(numberOfInstancesField).sendKeys(numberOfInstances.toString());
+    waitUntilClickable(driver, numberOfInstancesField).sendKeys(numberOfInstances.toString());
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage pickFreeOperatingSystem() {
-    forceClickElementWhenClickable(operatingSystemField);
-    forceClickElementWhenClickable(operatingSystemFreeSoftwareOption);
+    forceClickWhenClickable(driver, operatingSystemField);
+    forceClickWhenClickable(driver, operatingSystemFreeSoftwareOption);
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage pickRegularMachineClass() {
-    forceClickElementWhenClickable(machineClassField);
-    forceClickElementWhenClickable(machineClassRegularOption);
+    forceClickWhenClickable(driver, machineClassField);
+    forceClickWhenClickable(driver, machineClassRegularOption);
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage pickStandardEightMachineType() {
-    forceClickElementWhenClickable(machineTypeField);
-    forceClickElementWhenClickable(machineTypeStandardEightOption);
+    forceClickWhenClickable(driver, machineTypeField);
+    forceClickWhenClickable(driver, machineTypeStandardEightOption);
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage addGpus() {
-    forceClickElementWhenClickable(addGpusCheckbox);
-    forceClickElementWhenClickable(numberOfGpusField);
-    forceClickElementWhenClickable(numberOfGpusSingleGpuOption);
-    forceClickElementWhenClickable(gpuTypeField);
-    forceClickElementWhenClickable(gpuTypeChooseGpuNVIDIATeslaV100Type);
+    forceClickWhenClickable(driver, addGpusCheckbox);
+    forceClickWhenClickable(driver, numberOfGpusField);
+    forceClickWhenClickable(driver, numberOfGpusSingleGpuOption);
+    forceClickWhenClickable(driver, gpuTypeField);
+    forceClickWhenClickable(driver, gpuTypeChooseGpuNVIDIATeslaV100Type);
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage pickLocalSsd() {
-    forceClickElementWhenClickable(localSsdField);
-    forceClickElementWhenClickable(localSsd2x375Option);
+    forceClickWhenClickable(driver, localSsdField);
+    forceClickWhenClickable(driver, localSsd2x375Option);
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage pickDatacenterLocation() {
-    forceClickElementWhenClickable(datacenterLocationField);
-    forceClickElementWhenClickable(datacenterLocationFrankfurtOption);
+    forceClickWhenClickable(driver, datacenterLocationField);
+    forceClickWhenClickable(driver, datacenterLocationFrankfurtOption);
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage pickCommittedUsage() {
-    forceClickElementWhenClickable(committedUsageField);
-    forceClickElementWhenClickable(committedUsageOneYearOption);
+    forceClickWhenClickable(driver, committedUsageField);
+    forceClickWhenClickable(driver, committedUsageOneYearOption);
     return this;
   }
 
   public GoogleCloudPricingCalculatorPage addToEstimate() {
-    forceClickElementWhenClickable(addToEstimateButton);
+    forceClickWhenClickable(driver, addToEstimateButton);
     return this;
   }
 
   public boolean checkEstimateFields() {
-    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS).until(ExpectedConditions
-        .visibilityOfAllElements(
+    new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
+        .until(ExpectedConditions.visibilityOfAllElements(
             estimateVmClass,
             estimateInstanceType,
             estimateRegion,
@@ -183,18 +181,7 @@ public class GoogleCloudPricingCalculatorPage extends AbstractPage {
   }
 
   public GoogleCloudPricingCalculatorEmailEstimatePage clickEmailEstimate() {
-    forceClickElementWhenClickable(emailEstimateButton);
+    forceClickWhenClickable(driver, emailEstimateButton);
     return new GoogleCloudPricingCalculatorEmailEstimatePage(driver);
-  }
-
-  private WebElement waitUntilElementIsClickable(WebElement element) {
-    return new WebDriverWait(driver, WAIT_TIMEOUT_SECONDS)
-        .until(ExpectedConditions.elementToBeClickable(element));
-  }
-
-  // only for elements that continuously ignore clicks
-  private void forceClickElementWhenClickable(WebElement element) {
-    waitUntilElementIsClickable(element);
-    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
   }
 }
