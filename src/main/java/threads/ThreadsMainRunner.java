@@ -1,21 +1,15 @@
 package threads;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import static threads.util.WaitHelper.waitForThisMuchSeconds;
 
 public class ThreadsMainRunner {
   public static volatile boolean keepRoutingTraffic;
 
   public static void main(String[] args) {
-    BlockingQueue<Car> parking = new LinkedBlockingQueue<>(7);
+    Parking parking = new Parking(5);
     keepRoutingTraffic = true;
-    new Thread(() -> CarTraffic.routeTrafficToTheParking(parking)).start();
-    try {
-      TimeUnit.SECONDS.sleep(30);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    new Thread(() -> TrafficControl.routeTrafficToTheParking(parking)).start();
+    waitForThisMuchSeconds(30);
     System.out.println("--------------------Traffic halted--------------------");
     keepRoutingTraffic = false;
   }
