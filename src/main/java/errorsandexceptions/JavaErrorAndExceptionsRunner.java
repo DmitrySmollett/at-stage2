@@ -19,7 +19,7 @@ public class JavaErrorAndExceptionsRunner {
 
     try {
       System.out.println(
-          "Average grade for student is " + DeansOffice.calculateAverageStudentGrade(student));
+          "Average grade for a student is " + DeansOffice.calculateAverageStudentGrade(student));
     } catch (StudentHasNoSubjectsException | GradeOutOfRangeException e) {
       e.printStackTrace();
     }
